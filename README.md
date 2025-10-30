@@ -1,70 +1,150 @@
-# Getting Started with Create React App
+# Vote App 🗳️
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack real-time voting application with user authentication, scheduled voting periods, and live result visualization.
 
-## Available Scripts
+## Features ✨
 
-In the project directory, you can run:
+- **회원 관리**: Register, login, logout with JWT authentication
+- **투표 생성**: Create polls with multiple options, start/end times, anonymous/public voting
+- **실시간 투표**: One vote per user per poll, live result updates
+- **시각화**: Progress bars and charts showing real-time voting results
+- **상태 관리**: Upcoming, active, and ended vote status with automatic transitions
 
-### `npm start`
+## Tech Stack 🛠️
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Backend:**
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT Authentication
+- bcrypt for password hashing
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**Frontend:**
+- React (Create React App)
+- CSS-in-JS styling
+- Real-time updates (polling every 30s)
 
-### `npm test`
+## Setup & Installation 🚀
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB database
+- Git
 
-### `npm run build`
+### Environment Variables
+Create `.env` file in the `backend` directory:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```env
+MONGO_URI=mongodb://localhost:27017/vote-app
+JWT_SECRET=your-super-secret-jwt-key-here
+PORT=5000
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation Steps
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. **Clone the repository:**
+```bash
+git clone <your-repo-url>
+cd vote-app
+```
 
-### `npm run eject`
+2. **Install backend dependencies:**
+```bash
+cd backend
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. **Install frontend dependencies:**
+```bash
+cd ../frontend
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. **Start MongoDB** (if running locally)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. **Run the application:**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm start
+# Server runs on http://localhost:5000
+```
 
-## Learn More
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm start
+# Frontend runs on http://localhost:3000
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The frontend proxy is configured to route `/api/*` requests to the backend server during development.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## API Endpoints 📡
 
-### Code Splitting
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Votes
+- `GET /api/votes` - Get all votes (public)
+- `POST /api/votes` - Create new vote (auth required)
+- `GET /api/votes/:id` - Get specific vote details
+- `POST /api/votes/:id/vote` - Submit vote (auth required, one per user)
 
-### Analyzing the Bundle Size
+## Key Features Implementation 🔧
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 투표 참여 (Voting Participation)
+- **One vote per topic**: Backend validates user hasn't voted before
+- **Real-time updates**: Frontend polls every 30 seconds for active votes
+- **Status validation**: Only allows voting during active period
 
-### Making a Progressive Web App
+### 실시간 결과 (Real-time Results)
+- **Live counting**: Vote counts update immediately after submission
+- **Progress visualization**: Animated progress bars with percentages
+- **Status indicators**: Visual badges for upcoming/active/ended states
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 인증 시스템 (Authentication System)
+- **JWT tokens**: Stored in localStorage, sent in Authorization header
+- **Protected routes**: Vote creation and submission require authentication
+- **Session management**: Login/logout with automatic UI updates
 
-### Advanced Configuration
+## Project Structure 📁
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```
+vote-app/
+├── backend/
+│   ├── config/db.js          # MongoDB connection
+│   ├── middleware/authMiddleware.js  # JWT validation
+│   ├── models/               # Mongoose schemas
+│   ├── routes/               # API endpoints
+│   └── server.js            # Express app entry
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── pages/          # Page components
+│   │   └── App.js          # Main app
+│   └── package.json        # Frontend dependencies
+└── README.md
+```
 
-### Deployment
+## Development Notes 📝
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- **Backend runs on port 5000** by default
+- **Frontend development server on port 3000**
+- **Database**: MongoDB with collections for users, votes
+- **Authentication**: JWT tokens with 30-day expiration
+- **Real-time**: Client-side polling (can be upgraded to WebSockets)
 
-### `npm run build` fails to minify
+## Troubleshooting 🔧
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Common Issues:**
+1. **MongoDB connection**: Ensure MongoDB is running and `MONGO_URI` is correct
+2. **JWT errors**: Check `JWT_SECRET` is set in backend/.env
+3. **CORS issues**: Backend includes CORS middleware for development
+4. **Port conflicts**: Change PORT in .env if 5000 is occupied
+
+**Debug Steps:**
+1. Check backend console for MongoDB connection logs
+2. Verify frontend can reach `/api/votes` endpoint
+3. Check browser Network tab for API call failures
+4. Ensure both servers are running simultaneously
