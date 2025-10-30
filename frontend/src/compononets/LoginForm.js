@@ -13,6 +13,7 @@ function LoginForm() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
+      localStorage.setItem("token", data.token);  // save JWT
       console.log(data);
       alert("Login successful!");
     } catch (err) {
