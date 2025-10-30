@@ -4,6 +4,53 @@ import Vote from "../models/Vote.js";
 
 const router = express.Router();
 
+// get today's best votes (trending/popular)
+router.get("/best/today", async (req, res) => {
+  try {
+    // Get votes from today
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const votes = await Vote.find({
+      createdAt: { $gte: startOfDay }
+    })
+      .populate("createdBy", "username")
+      .sort({ createdAt: -1 });
+    
+    // Calculate popularity score based on views and participation
+    const votesWithScore = votes.map(vote => {
+      const voteObj = vote.toObject();
+      
+      // Add status
+      if (vote.isUpcoming()) {
+        voteObj.status = "upcoming";
+      } else if (vote.isActive()) {
+        voteObj.status = "active";
+      } else {
+        voteObj.status = "ended";
+      }
+      
+      // Calculate total participation
+      const totalVotes = vote.options.reduce((sum, option) => sum + option.votes.length, 0);
+      
+      // Popularity score: views * 1 + votes * 3 (votes weighted more heavily)
+      voteObj.popularityScore = (vote.viewCount || 0) + (totalVotes * 3);
+      voteObj.totalVotes = totalVotes;
+      
+      return voteObj;
+    });
+    
+    // Sort by popularity score and return top 3
+    const bestVotes = votesWithScore
+      .sort((a, b) => b.popularityScore - a.popularityScore)
+      .slice(0, 3);
+    
+    res.json(bestVotes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // get all votes
 router.get("/", async (req, res) => {
   try {
@@ -21,6 +68,11 @@ router.get("/", async (req, res) => {
       } else {
         voteObj.status = "ended";
       }
+      
+      // Add total votes count
+      const totalVotes = vote.options.reduce((sum, option) => sum + option.votes.length, 0);
+      voteObj.totalVotes = totalVotes;
+      
       return voteObj;
     });
     
@@ -73,7 +125,12 @@ router.post("/", protect, async (req, res) => {
 // get a specific vote
 router.get("/:id", async (req, res) => {
   try {
-    const vote = await Vote.findById(req.params.id)
+    // Increment view count
+    const vote = await Vote.findByIdAndUpdate(
+      req.params.id, 
+      { $inc: { viewCount: 1 } }, 
+      { new: true }
+    )
       .populate("createdBy", "username")
       .populate("options.votes", "username");
     

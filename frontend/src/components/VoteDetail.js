@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import CommentSection from "./CommentSection";
 
 function VoteDetail({ vote, onVoteUpdated }) {
   const [message, setMessage] = useState("");
@@ -251,6 +252,9 @@ function VoteDetail({ vote, onVoteUpdated }) {
         {!currentVote.isAnonymous && <div>🔓 공개 투표 (투표자 이름 표시)</div>}
         {currentVote.isAnonymous && <div>🔒 익명 투표</div>}
       </div>
+
+      {/* Comment Section */}
+      <CommentSection voteId={currentVote._id} />
     </div>
   );
 }

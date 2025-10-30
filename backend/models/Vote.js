@@ -31,6 +31,10 @@ const voteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: "User", 
     required: true 
+  },
+  viewCount: {
+    type: Number,
+    default: 0
   }
 }, { 
   timestamps: true 

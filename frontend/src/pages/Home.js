@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import VoteList from "../components/VoteList";
 import LoginForm from "../components/LoginForm";
 import VoteCreate from "../components/VoteCreate";
+import BestVotes from "../components/BestVotes";
 
 function Home() {
   const [votes, setVotes] = useState([]);
@@ -90,9 +91,12 @@ function Home() {
         <VoteCreate onVoteCreated={handleVoteCreated} />
       )}
 
+      {/* Best Votes Section */}
+      <BestVotes />
+
       {/* Vote list */}
       <div>
-        <h2>All Votes</h2>
+        <h2>모든 투표</h2>
         <VoteList votes={votes} />
       </div>
     </div>
