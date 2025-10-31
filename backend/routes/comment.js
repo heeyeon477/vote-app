@@ -5,7 +5,17 @@ import Vote from "../models/Vote.js";
 
 const router = express.Router();
 
-// Get comments for a specific vote
+/**
+ * GET /api/comments/vote/:voteId
+ * 
+ * Retrieves all comments for a specific vote, sorted by newest first
+ * 
+ * DESIGN DECISIONS:
+ * - Comments are sorted newest first (createdAt: -1) for better UX
+ * - Only populate author username (not email/password) for privacy
+ * - Validates vote exists before fetching comments (referential integrity)
+ * - No authentication required - comments are public within vote context
+ */
 router.get("/vote/:voteId", async (req, res) => {
   try {
     const { voteId } = req.params;
